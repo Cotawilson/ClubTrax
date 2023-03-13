@@ -12,6 +12,7 @@
 		 
                <center>
 				   Search by:   <asp:DropDownList ID="DropDownList1" runat="server">
+					    <asp:ListItem>SalesType</asp:ListItem>
             <asp:ListItem>PLU</asp:ListItem>
             <asp:ListItem>MenuItem</asp:ListItem>
             <asp:ListItem>PriceName</asp:ListItem>
@@ -24,9 +25,10 @@
 				 
 					<%--<asp:BoundField HeaderStyle-ForeColor="#cc0000"   DataField="id" Visible="true" HeaderText="id" />--%>
 
-	
+					<asp:BoundField  HeaderStyle-ForeColor="#cc0000" SortExpression="SalesType"  DataField="SalesType" HeaderText="SalesType" />
+						<asp:BoundField  HeaderStyle-ForeColor="#cc0000" SortExpression="MenuItem"  DataField="MenuItem" HeaderText="MenuItem" />
 					<asp:BoundField HeaderStyle-ForeColor="#cc0000" SortExpression="PLU"  DataField="PLU" HeaderText="PLU" />
-					<asp:BoundField  HeaderStyle-ForeColor="#cc0000" SortExpression="MenuItem"  DataField="MenuItem" HeaderText="MenuItem" />
+				
 					<asp:BoundField HeaderStyle-ForeColor="#cc0000"  sortexpression="pricename" DataField="PriceName" HeaderText="PriceName" />
 					<asp:BoundField HeaderStyle-ForeColor="#cc0000"  DataField="nAmount" HeaderText="Amount" />
 					<asp:BoundField HeaderStyle-ForeColor="#cc0000"  DataField="nDiscountPrice" HeaderText="DiscountPrice" />
