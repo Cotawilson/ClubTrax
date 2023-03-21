@@ -32,24 +32,9 @@
         var table;
         $(document).ready( function () {
            
-            const createdCell = function (cell) {
-                let original;
-                cell.setAttribute('contenteditable', true)
-                cell.setAttribute('spellcheck', false)
-                cell.addEventListener("focus", function (e) {
-                    original = e.target.textContent
-                })
-                cell.addEventListener("blur", function (e) {
-                    if (original !== e.target.textContent) {
-                        const row = table.row(e.target.parentElement)
-                        row.invalidate()
-                        console.log('Row changed: ', row.data())
-                    }
-                })
-            }
-            function prepareEditableOrder(data, type, row, meta) {
-                return '<input class="form-control cell-datatable" id="' + row.Id + '" type="text"  value = ' + data + ' >';
-            }
+           
+           
+            
             let collapsedGroups = {};
             var result = $.parseJSON(JSONEventData);
             console.log(result);
@@ -61,17 +46,25 @@
                "order": [[1, 'asc']],
                data: result,
                aoColumnDefs: [{
-                   targets: [4],
-                  
-
-               }],
+                   targets: [5],
+                  createdCell: createdCell
+               },
+                   {
+                       target: 0,
+                       visible: false,
+                   }],
                columns: [{ data: "nID" },
                    { data: "PLU" },
                    { data: "MenuItem" },
                    { data: "SalesType" },
                    { data: "PriceName" },
-                   { data: "nAmount", render: prepareEditableOrder },
-                   { data: "nDiscountPrice" }
+                   {
+                       data: "nAmount",
+                       render: $.fn.dataTable.render.number(',', '.', 2)
+                   },
+                   {
+                       data: "nDiscountPrice",
+                       render: $.fn.dataTable.render.number(',', '.', 2)    }
                   
                 ],
                
@@ -87,7 +80,7 @@
                        });
                        // Add category name to the <tr>. NOTE: Hardcoded colspan
                        return $('<tr/>')
-                           .append('<td colspan="7">' + group + ' (' + rows.count() + ')</td>')
+                           .append('<td colspan="7">' + group + ' (' + rows.count() + ')<span class="glyphicon glyphicon-chevron-down"></span></td>')
                            .attr('data-name', group)
                            .toggleClass('collapsed', collapsed);
                    
@@ -105,14 +98,49 @@
             }
             });
 
-           
+          
            
            
         });
-        
-        
+        const createdCell = function (cell) {
+            let original;
+            cell.setAttribute('contenteditable', true)
+            cell.setAttribute('spellcheck', false)
+            cell.addEventListener("focus", function (e) {
+                console.log("focus")
+                original = e.target.textContent
+            })
+            cell.addEventListener("blur", function (e) {
+                if (original !== e.target.textContent) {
+                    const row = table.row(e.target.parentElement)
+                    //row.invalidate()
+                    var newVal = e.target.textContent;
+                    var plu = row.data().PLU;
+                    var pName = row.data().PriceName;
+                    console.log('Row changed: ', row.data().PLU)
+                    dataMaintenanceUpdate(newVal, plu, pName)
+                }
+            })
+        }
+
+        //$('#myTable').on('input', function () { alert(1) });
+        $('#myTable').on('change', '.cell-datatable', function (e) {
+            var clickedRow = table.row(e.target.parentElement.parentElement)
+            console.log(clickedRow)
+            $(clickedRow).find('td').each(function () {
+                console.log($(this).html($(html)))
+                if ($(this).hasClass('editable')) {
+                    if ($(this).hasClass('text')) {
+                        //var html = fnCreateTextBox($(this).html(), 'name');
+                        $(this).html($(html))
+                    }
+                }
+            });
+
+        });
+      
        
-        function dataMaintenanceUpdate(tableRow) {
+        function dataMaintenanceUpdate(newVal, plu, pName) {
             // Update the data item.  
            //var parameterList = "{'PLU':'" + tableRow.PLU + "', " + "'amount':'" + tableRow.nAmount + "','priceName':'" + tableRow.PriceName + "'}";
             //var parameterList = "{'PLU': '";
@@ -120,7 +148,7 @@
             $.ajax({
                 type: "POST",
                 url: "Menu.aspx/UpdatePricingList",
-                data: '{ PLU: "' + tableRow.PLU + '", amount: "'+tableRow.nAmount + '", priceName: "'+ tableRow.PriceName + '"}',
+                data: '{ PLU: "' + plu + '", amount: "'+newVal + '", priceName: "'+ pName + '"}',
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (response) {
@@ -139,7 +167,7 @@
 
                     resetTable(tableRow.parent().parent().id);
                     //console.log(tableRow);
-                    updateDataTable(tableRow);
+                   // updateDataTable(tableRow);
                     // } else {
                     //$('.exception').html('Error occurred attempting to update the ' + division + '. Please contact the</br>' +
                     //'Service Desk @ (918) 596-7070 to report the error.</br>' + response.Message);
@@ -159,7 +187,6 @@
 
 
 
-	<script src="../Scripts/dataTables.cellEdit.js"></script>
 	</html>
     </asp:Content>
 

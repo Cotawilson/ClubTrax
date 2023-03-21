@@ -13,6 +13,9 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using ClubTraxUtilityPrograms.Utilities;
 using System.Security.Policy;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
+using System.Data.SqlTypes;
 
 namespace ClubTraxUtilityPrograms
 {
@@ -82,22 +85,28 @@ namespace ClubTraxUtilityPrograms
         [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
         public static string UpdatePricingList(string PLU, string amount, string priceName)
         {
-            
+            try {
+            double amt = Convert.ToDouble(amount);          
             using (Database d = new Database("cn"))
             {
                 using (SqlCommand comm = new SqlCommand("UpdatePriceList", d.Connection))
                 {
                     comm.CommandType = CommandType.StoredProcedure;
                     comm.Parameters.AddWithValue("@PLU", PLU);
-                    comm.Parameters.AddWithValue("@Amount", amount);
+                    comm.Parameters.AddWithValue("@Amount", amt);
                     comm.Parameters.AddWithValue("@priceName", priceName);
                     comm.ExecuteNonQuery();
-                    
+
 
                 }
 
 
             }
+        }
+        catch(Exception e)
+        {
+                return "Failed";
+        }
             return "OK";
         }
 
