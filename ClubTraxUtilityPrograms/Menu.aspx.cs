@@ -46,10 +46,10 @@ namespace ClubTraxUtilityPrograms
                       
                 using (Database d = new Database("cn"))
                 {
-                    using (SqlCommand comm = new SqlCommand("SELECT * FROM tempChangePricing ORDER BY [nID]", d.Connection))
+                    using (SqlCommand comm = new SqlCommand("PriceList", d.Connection))
                     {
-
-                        SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(comm);
+                    comm.CommandType = CommandType.StoredProcedure;
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(comm);
                         dt.TableName = "PricingList";
                         sqlDataAdapter.Fill(dt);
                     }
@@ -91,6 +91,7 @@ namespace ClubTraxUtilityPrograms
             {
                 using (SqlCommand comm = new SqlCommand("UpdatePriceList", d.Connection))
                 {
+                    
                     comm.CommandType = CommandType.StoredProcedure;
                     comm.Parameters.AddWithValue("@PLU", PLU);
                     comm.Parameters.AddWithValue("@Amount", amt);
